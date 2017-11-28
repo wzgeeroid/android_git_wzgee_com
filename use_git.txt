@@ -1,0 +1,7 @@
+pwd命令用于显示当前目录
+repository版本库又名仓库，可以简单的理解成一个目录
+git init命令瞬间就会把仓库建好
+.git 目录是git来跟踪办理版本库的
+.git 目录，默认是隐藏的，可以通过ls -ah命令来显示
+git add file添加文件到工作区
+git commit -m"提交注释"
