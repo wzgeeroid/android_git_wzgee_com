@@ -1,0 +1,136 @@
+/**
+ * Created by ears_wzg on 2017/12/4.
+ */
+public class MyCountView extends View {
+
+    //X、Y轴的画笔
+    private Paint xy_line_Paint;
+    //X、Y轴上刻度字体的画笔
+    private Paint xy_text_Paint;
+    //坐标点连线的画笔
+    private Paint path_line_Paint;
+
+    private int press_current = 0;
+
+    //坐标点的数据
+    private List<Float> x_data = new LinkedList<>();
+    private List<Float> y_data = new LinkedList<>();
+
+    public MyCountView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public void setData(List<Float> a, List<Float> b) {
+        x_data.clear();
+        y_data.clear();
+        for (int i = 0; i < a.size(); i++) {
+            x_data.add(a.get(i));
+            y_data.add(b.get(i));
+        }
+        invalidate();
+    }
+
+    //初始化
+    public void init() {
+
+        //初始化XY轴的画笔
+        xy_line_Paint = new Paint();
+        xy_line_Paint.setColor(0xff000000);
+        //设置是否填充 STROKE就是线，不填充、FILL填充
+        xy_line_Paint.setStyle(Paint.Style.STROKE);
+        //设置线条宽度
+        xy_line_Paint.setStrokeWidth(4);
+
+        //初始化坐标点连线的画笔
+        path_line_Paint = new Paint();
+        path_line_Paint.setColor(0xff000000);
+        //设置是否填充 STROKE就是线，不填充、FILL填充
+        path_line_Paint.setStyle(Paint.Style.FILL);
+        path_line_Paint.setAlpha(50);
+        //设置线条宽度
+        path_line_Paint.setStrokeWidth(2);
+
+        //初始化xy轴刻度的画笔
+        xy_text_Paint = new Paint();
+        xy_text_Paint.setColor(Color.BLUE);
+        xy_text_Paint.setTextSize(30);
+        xy_text_Paint.setTypeface(Typeface.DEFAULT_BOLD);
+
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        //X轴上显示三个数据，左边空出十分之一的宽度，右边也空出十分之一的宽度
+        //画X轴
+        canvas.drawLine(getWidth() / 10, getHeight() * 9 / 10, getWidth(), getHeight() * 9 / 10, xy_line_Paint);
+        //画Y轴
+        canvas.drawLine(getWidth() / 10, 0, getWidth() / 10, getHeight() * 9 / 10, xy_line_Paint);
+        //画XY轴上的箭头
+        canvas.drawLine(getWidth() / 10, 0, getWidth() / 10 - 30, 30, xy_line_Paint);
+        canvas.drawLine(getWidth() / 10, 0, getWidth() / 10 + 30, 30, xy_line_Paint);
+        canvas.drawLine(getWidth(), getHeight() * 9 / 10, getWidth() - 30, getHeight() * 9 / 10 - 30, xy_line_Paint);
+        canvas.drawLine(getWidth(), getHeight() * 9 / 10, getWidth() - 30, getHeight() * 9 / 10 + 30, xy_line_Paint);
+        //画XY轴上的刻度
+        canvas.drawText(x_data.get(0) + "", getWidth() / 10, getHeight() * 9 / 10 + 30, xy_text_Paint);
+        canvas.drawText((x_data.get(0) + x_data.get(x_data.size() - 1)) / 2 + "", getWidth() / 2, getHeight() * 9 / 10 + 30, xy_text_Paint);
+        canvas.drawText(x_data.get(x_data.size() - 1) + "", getWidth() * 9 / 10, getHeight() * 9 / 10 + 30, xy_text_Paint);
+        canvas.drawText(y_data.get(0) + "", getWidth() / 10 - 60, getHeight() * 9 / 10, xy_text_Paint);
+        canvas.drawText((y_data.get(0) + y_data.get(y_data.size() - 1)) / 2 + "", getWidth() / 10 - 60, getHeight() / 2, xy_text_Paint);
+        canvas.drawText(y_data.get(y_data.size() - 1) + "", getWidth() / 10 - 60, getHeight() / 10, xy_text_Paint);
+
+
+        //画面积图
+        Path arr_path = new Path();//面积图
+        arr_path.moveTo(getWidth() / 10, getHeight() * 9 / 10);//绘画基点(坐标原点)
+        for (int i = 1; i < x_data.size(); i++) {
+            arr_path.lineTo(
+                    (x_data.get(i) - x_data.get(0)) * (getWidth() * 8 / 10) / (x_data.get(x_data.size() - 1) - x_data.get(0)) + getWidth() / 10,
+                    getHeight() * 9 / 10 - ((y_data.get(i) - y_data.get(0)) * (getHeight() * 8 / 10) / (y_data.get(y_data.size() - 1) - y_data.get(0))));
+
+            //坐标点的信息
+            if (i == press_current) {
+                canvas.drawText("(" + x_data.get(i) + "," + y_data.get(i) + ")",
+                        (x_data.get(i) - x_data.get(0)) * (getWidth() * 8 / 10) / (x_data.get(x_data.size() - 1) - x_data.get(0)) + getWidth() / 10,
+                        getHeight() * 9 / 10 - ((y_data.get(i) - y_data.get(0)) * (getHeight() * 8 / 10) / (y_data.get(y_data.size() - 1) - y_data.get(0))),
+                        xy_text_Paint);
+            }
+
+            Log.e("ccc", "" + (x_data.get(i) - x_data.get(0)) * (getWidth() * 8 / 10) / (x_data.get(x_data.size() - 1) - x_data.get(0)) + "---" + (y_data.get(i) - y_data.get(0)) * (getHeight() * 8 / 10) / (y_data.get(y_data.size() - 1) - x_data.get(0)));
+            Log.e("ccc", getWidth() / 10 + "");
+        }
+        arr_path.lineTo(getWidth() * 9 / 10, getHeight() * 9 / 10);
+
+        canvas.drawPath(arr_path, path_line_Paint);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+
+                float temp_x;
+                float temp_y;
+
+                for (int i = 1; i < x_data.size(); i++) {
+                    //当点击到坐标点周围时，触发event分发事件
+                    temp_x = event.getX() - ((x_data.get(i) - x_data.get(0)) * (getWidth() * 8 / 10) / (x_data.get(x_data.size() - 1) - x_data.get(0)) + getWidth() / 10);
+                    temp_y = event.getY() - (getHeight() * 9 / 10 - ((y_data.get(i) - y_data.get(0)) * (getHeight() * 8 / 10) / (y_data.get(y_data.size() - 1) - y_data.get(0))));
+                    if (Math.abs(temp_x) < 30 && Math.abs(temp_y) < 30) {
+                        press_current = i;
+                        invalidate();
+                        return true;
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+        }
+
+        return super.dispatchTouchEvent(event);
+    }
+}
