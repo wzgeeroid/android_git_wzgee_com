@@ -1,0 +1,41 @@
+禁止ViewPager滑动
+自定义ViewPager，覆盖掉ViewPager的onIntercrpTouch(MotionEvent arg0)方法和onTouchEvent(MotionEvent arg0)方法，将这两个方法的返回值改为false，
+那么ViewPager就不会消耗掉手指滑动的事件，转而传递给上层View或者该事件直接终止。
+
+public class NoScrollViewPager extends ViewPager {
+
+    public NoScrollViewPager(Context context) {
+        super(context);
+    }
+
+    public NoScrollViewPager(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        return false;
+    }
+
+    @Override
+    public void scrollTo(int x, int y) {
+        super.scrollTo(x, y);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return false;
+    }
+
+    @Override
+    public void setCurrentItem(int item) {
+        super.setCurrentItem(item);
+    }
+
+    @Override
+    public void setCurrentItem(int item, boolean smoothScroll) {
+        super.setCurrentItem(item, smoothScroll);
+    }
+}
+
+具体的代码也就这么多行，可以直接拿过来使用。
